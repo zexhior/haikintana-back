@@ -59,23 +59,18 @@ class Photo(models.Model):
 
 class Description(models.Model):
     paragraphe = models.CharField(max_length=1000, null=False)
-    activite = models.ForeignKey(Activite, on_delete=models.CASCADE)
+    activite = models.ForeignKey(Activite, related_name='descriptions', on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.paragraphe)
 
 class Presence(models.Model):
     presence = models.BooleanField(default=False)
-    activite = models.ForeignKey(Activite, related_name='presences', on_delete= models.CASCADE)
-    membre = models.ForeignKey(Membre, related_name='presences', on_delete= models.CASCADE)
+    activite = models.ForeignKey(Activite, related_name='activite_presences', on_delete= models.CASCADE)
+    membre = models.ForeignKey(Membre, related_name='membre_presences', on_delete= models.CASCADE)
 
     def __str__(self):
         return "{} {}".format(self.presence)
-
-class Customer(models.Model):
-    name = models.CharField(max_length=70, blank=False, default='')
-    age = models.IntegerField(blank=False, default=1)
-    active = models.BooleanField(default=False)
 
 #{
 #    'nom' = "RAKOTO",

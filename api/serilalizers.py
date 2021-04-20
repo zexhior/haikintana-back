@@ -13,44 +13,48 @@ class MembreSerializer(serializers.ModelSerializer):
                   'nbr_paiement',
                   #'photo',)
                   'linkedin',
-                  'statut',)
+                  'statut',
+                  'nummembre',
+                  'fbmembre',
+                  'mailmembre'
+                  )
 
 class NumeroSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactNum
-        fields = ('numero','membre')
+        fields = ('numero', 'membre',)
 
 class FbSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactFb
-        fields = ['nom_compte','membre']
+        fields = ('nom_compte', 'membre',)
 
 class MailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMail
-        fields = ['adr_mail', 'membre']
+        fields = ('adr_mail', 'membre',)
 
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
-        fields = ['type', 'activities']
+        fields = ('type', 'activities',)
 
 class ActiviteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activite
-        fields = ['theme', 'date', 'categorie', 'photos']
+        fields = ('theme', 'date', 'categorie', 'photos')
 
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['url_image', 'activite']
+        fields = ('url_image', 'activite')
 
 class DescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Description
-        fields = ['paragraphe', 'activite']
+        fields = ('paragraphe', 'activite')
 
 class PresenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Presence
-        fields = ['presence', 'activite', 'membre']
+        fields = ('presence', 'activite', 'membre')

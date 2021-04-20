@@ -43,70 +43,107 @@ def delete(serializer, pk, model):
     item = model.objects.get(id=pk)
     item.delete()
 
+def object_list(serializer, model, request):
+    if request.method == "GET":
+        return JsonResponse(read_all(serializer, model).data, safe=False)
+    elif request.method == "POST":
+        return JsonResponse(create(serializer, request).data, safe=False)
+    else:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+def object_get_update_delete(serializer, model, request, pk):
+    try:
+        if request.method == "GET":
+            return JsonResponse(read(serializer, pk, model).data)
+        elif request.method == "PUT":
+            return JsonResponse(update(serializer, pk, model, request))
+        else:
+            return HttpResponse(delete(serializer, pk, model))
+    except Membre.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['GET'])
 def home(requet):
     return Response(read_all(MembreSerializer, Membre).data)
 
 @csrf_exempt
 def membre_list(request):
-    if request.method == "GET":
-        return JsonResponse(read_all(MembreSerializer, Membre).data, safe=False)
-    elif request.method == "POST":
-        return JsonResponse(create(MembreSerializer, request).data, safe=False)
+    return object_list(MembreSerializer, Membre, request)
+
 
 @csrf_exempt
 def membre_get_update_delete(request, pk):
-    try:
-        membre = Membre.objects.get(id=pk)
-        if request.method == "GET":
-            return JsonResponse(read(MembreSerializer, pk, Membre).data)
-        elif request.method == "PUT":
-            return JsonResponse(update(MembreSerializer, pk, Membre, request))
-        else:
-            return HttpResponse(delete(MembreSerializer, pk, Membre))
-    except Membre.DoesNotExist:
-        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+    return object_get_update_delete(MembreSerializer, Membre, request, pk)
+
+@csrf_exempt
+def numero_list(request):
+    return object_list(NumeroSerializer, ContactNum, request)
 
 
 @csrf_exempt
-def customer_list(request):
-    if request.method == 'GET':
-        customers = Customer.objects.all()
-        customers_serializer = CustomerSerializer(customers, many=True)
-        return JsonResponse(customers_serializer.data, safe=False)
-        # In order to serialize objects, we must set 'safe=False'
-
-    elif request.method == 'POST':
-        customer_data = JSONParser().parse(request)
-        customer_serializer = CustomerSerializer(data=customer_data)
-        if customer_serializer.is_valid():
-            customer_serializer.save()
-            return JsonResponse(customer_serializer.data, status=status.HTTP_201_CREATED)
-        return JsonResponse(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        Customer.objects.all().delete()
-        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+def numero_get_update_delete(request, pk):
+    return object_get_update_delete(NumeroSerializer, ContactNum, request, pk)
 
 @csrf_exempt
-def customer_detail(request, pk):
-    try:
-        customer = Customer.objects.get(pk=pk)
-    except Customer.DoesNotExist:
-        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+def fb_list(request):
+    return object_list(FbSerializer, ContactFb, request)
 
-    if request.method == 'GET':
-        customer_serializer = CustomerSerializer(customer)
-        return JsonResponse(customer_serializer.data)
 
-    elif request.method == 'PUT':
-        customer_data = JSONParser().parse(request)
-        customer_serializer = CustomerSerializer(customer, data=customer_data)
-        if customer_serializer.is_valid():
-            customer_serializer.save()
-            return JsonResponse(customer_serializer.data)
-        return JsonResponse(customer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@csrf_exempt
+def fb_get_update_delete(request, pk):
+    return object_get_update_delete(FbSerializer, ContactFb, request, pk)
 
-    elif request.method == 'DELETE':
-        customer.delete()
-        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+@csrf_exempt
+def mail_list(request):
+    return object_list(MailSerializer, ContactMail, request)
+
+
+@csrf_exempt
+def mail_get_update_delete(request, pk):
+    return object_get_update_delete(MailSerializer, ContactMail, request, pk)
+
+@csrf_exempt
+def categorie_list(request):
+    return object_list(CategorieSerializer, Categorie, request)
+
+
+@csrf_exempt
+def categorie_get_update_delete(request, pk):
+    return object_get_update_delete(CategorieSerializer, Categorie, request, pk)
+
+@csrf_exempt
+def activite_list(request):
+    return object_list(ActiviteSerializer, Activite, request)
+
+@csrf_exempt
+def activite_get_update_delete(request, pk):
+    return object_get_update_delete(ActiviteSerializer, Activite, request, pk)
+
+@csrf_exempt
+def description_list(request):
+    return object_list(DescriptionSerializer, Description, request)
+
+
+@csrf_exempt
+def description_get_update_delete(request, pk):
+    return object_get_update_delete(DescriptionSerializer, Description, request, pk)
+
+@csrf_exempt
+def photo_list(request):
+    return object_list(PhotoSerializer, Photo, request)
+
+@csrf_exempt
+def photo_get_update_delete(request, pk):
+    return object_get_update_delete(PhotoSerializer, Photo, request, pk)
+
+@csrf_exempt
+def presence_list(request):
+    return object_list(PresenceSerializer, Presence, request)
+
+@csrf_exempt
+def presence_get_update_delete(request, pk):
+    return object_get_update_delete(PresenceSerializer, Presence, request, pk)
+
+@api_view(['PUT'])
+def update_membre(request,pk):
+    return Response(update(MembreSerializer,pk,Membre,request).data)
