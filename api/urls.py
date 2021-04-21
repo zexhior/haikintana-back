@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     url(r'^membres/$', views.membre_list),
+    url(r'^membres/(?P<pk>[0-9]+)$', views.membre_get_update_delete),
     url(r'^numeros/$', views.numero_list),
     url(r'^numeros/(?P<pk>[0-9]+)$', views.numero_get_update_delete),
     url(r'^fbs/$', views.fb_list),
@@ -21,5 +22,5 @@ urlpatterns = [
     url(r'^presences/$', views.presence_list),
     url(r'^presences/(?P<pk>[0-9]+)$', views.presence_get_update_delete),
     url(r'^updates/(?P<pk>[0-9]+)$', views.update_membre),
-    path('home', views.home, name='home')
+    path('home/', views.home, name='home')
 ]

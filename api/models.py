@@ -8,7 +8,7 @@ class Membre(models.Model):
     date_add = models.DateField(auto_now_add=True)
     cotisation = models.BigIntegerField()
     nbr_paiement = models.SmallIntegerField()
-    photo = models.URLField(max_length=100)
+    photo = models.FileField()
     linkedin = models.CharField(max_length=100)
     statut = models.CharField(max_length=100)
 
