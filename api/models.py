@@ -8,7 +8,7 @@ class Membre(models.Model):
     date_add = models.DateField(auto_now_add=True)
     cotisation = models.BigIntegerField()
     nbr_paiement = models.SmallIntegerField()
-    photo = models.FileField()
+    photo = models.ImageField(upload_to='images')
     linkedin = models.CharField(max_length=100)
     statut = models.CharField(max_length=100)
 
@@ -51,7 +51,7 @@ class Activite(models.Model):
         return "{}".format(self.theme)
 
 class Photo(models.Model):
-    url_image = models.URLField(null=False)
+    url_image = models.ImageField(upload_to='images')
     activite = models.ForeignKey(Activite, related_name='photos', on_delete=models.CASCADE)
 
     def __str__(self):

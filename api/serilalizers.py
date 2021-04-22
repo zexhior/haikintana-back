@@ -11,7 +11,7 @@ class MembreSerializer(serializers.ModelSerializer):
                   'date_add',
                   'cotisation',
                   'nbr_paiement',
-                  #'photo',)
+                  'photo',
                   'linkedin',
                   'statut',
                   'nummembre',
