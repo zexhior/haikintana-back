@@ -5,14 +5,39 @@ from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.parsers import JSONParser
 from rest_framework import status
 
 from .forms import UploadFileForm
 
 from .serilalizers import *
 
-def handle_uploaded_file(file):
-    photo = Photo()
+import cv2
+import numpy as np
+from pyzbar.pyzbar import decode
+import os
+from pathlib import Path
+from base64 import b64decode
+from urllib import request
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+@csrf_exempt
+def testCodeQr(request):
+    image_data = JSONParser().parse(request);
+
+    header, encoded = image_data['image'].split(",", 1)
+    data = b64decode(encoded)
+
+    with open(os.path.join(BASE_DIR, 'media/images/qr3.png'),"wb") as f:
+        f.write(data)
+
+    img = cv2.imread(os.path.join(BASE_DIR, 'media/images/qr3.png'))
+
+    myData = ""
+    for barcode in decode(img):
+       myData = barcode.data.decode('utf-8')
+    return JsonResponse(myData, safe=False)
 
 #CRUD
 def read_all(serializer, model):

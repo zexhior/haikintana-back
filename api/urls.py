@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^presences/$', views.presence_list),
     url(r'^presences/(?P<pk>[0-9]+)$', views.presence_get_update_delete),
     url(r'^updates/(?P<pk>[0-9]+)$', views.update_membre),
-    path('home/', views.home, name='home')
+    url(r'^$', views.home, name='home'),
+    url(r'^qrcode/$', views.testCodeQr),
 ]
