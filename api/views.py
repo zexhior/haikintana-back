@@ -13,14 +13,13 @@ from .forms import UploadFileForm
 from .serilalizers import *
 
 import cv2
-import numpy as np
 from pyzbar.pyzbar import decode
 import os
 from pathlib import Path
 from base64 import b64decode
-from urllib import request
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+test= False;
 
 @csrf_exempt
 def testCodeQr(request):
@@ -36,7 +35,13 @@ def testCodeQr(request):
 
     myData = ""
     for barcode in decode(img):
-       myData = barcode.data.decode('utf-8')
+        myData = barcode.data.decode('utf-8')
+    if myData != "" :
+        elements = myData.split('*')
+        membre = Membre.objects.get(id=elements[0], nom=elements[1], prenom=elements[2])
+        serial = MembreSerializer(membre)
+        return JsonResponse(serial.data, safe=False)
+
     return JsonResponse(myData, safe=False)
 
 #CRUD
@@ -50,10 +55,12 @@ def read(serializer, pk, model):
     return serial
 
 def create(serializer, request):
-    serial = serializer(data=request.data)
+    element = JSONParser().parse(request)
+    serial = serializer(data=element)
 
     if serial.is_valid():
         serial.save
+        test=True
 
     return serial
 
@@ -70,11 +77,13 @@ def delete(serializer, pk, model):
     item = model.objects.get(id=pk)
     item.delete()
 
+
+
 def object_list(serializer, model, request):
     if request.method == "GET":
         return JsonResponse(read_all(serializer, model).data, safe=False)
     elif request.method == "POST":
-        return JsonResponse(create(serializer, request).data, safe=False)
+        return JsonResponse(create(serializer, request).data)
     else:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 

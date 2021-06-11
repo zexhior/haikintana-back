@@ -42,7 +42,7 @@ class CategorieSerializer(serializers.ModelSerializer):
 class ActiviteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activite
-        fields = ('theme', 'date', 'categorie', 'descriptions', 'photos')
+        fields = ('id','theme', 'date', 'categorie', 'descriptions', 'photos')
 
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
