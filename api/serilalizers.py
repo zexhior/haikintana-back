@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django import forms
 from .models import *
 
 class MembreSerializer(serializers.ModelSerializer):
@@ -9,14 +10,29 @@ class MembreSerializer(serializers.ModelSerializer):
                   'prenom',
                   'adr_phys',
                   'date_add',
-                  'cotisation',
-                  'nbr_paiement',
-                  'photo',
                   'linkedin',
                   'statut',
                   'nummembre',
                   'fbmembre',
-                  'mailmembre'
+                  'mailmembre',
+                  'photoprofil',
+                  'presencemembre',
+                  )
+
+class MembreSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Membre
+        fields = ('id',
+                  'nom',
+                  'prenom',
+                  'adr_phys',
+                  'date_add',
+                  'linkedin',
+                  'statut',
+                  #'nummembre',
+                  #'fbmembre',
+                  #'mailmembre',
+                  #photoprofil',
                   )
 
 class NumeroSerializer(serializers.ModelSerializer):
@@ -37,12 +53,29 @@ class MailSerializer(serializers.ModelSerializer):
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorie
-        fields = ('type', 'activities',)
+        fields = ('id','type',)
+
+class ActiviteSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Activite
+        fields = ('id',
+                  'theme',
+                  'date',
+                  'categorie',
+                  #'descriptions',
+                  #'photos'
+                 )
 
 class ActiviteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activite
-        fields = ('id','theme', 'date', 'categorie', 'descriptions', 'photos')
+        fields = ('id',
+                  'theme',
+                  'date',
+                  'categorie',
+                  'descriptions',
+                  'photos',
+                 )
 
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,3 +91,33 @@ class PresenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Presence
         fields = ('presence', 'activite', 'membre')
+
+class ContactOrganisationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactOrganisation
+        fields = ('email', 'numero', 'bancaire', 'facebook')
+
+class CotisationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cotisation
+        fields = ('motif', 'montant', 'activite')
+
+class PaiementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Paiement
+        fields = ('montant', 'ref', 'membre', 'cotisation')
+
+class PhotoProfilSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhotoProfil
+        fields = ('id','photo', 'membre',)
+
+class RegleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Regle
+        fields = ('numero', 'description', 'activite')
+
+class PhotoProfilForm(forms.ModelForm):
+    class Meta:
+        model = PhotoProfil
+        fields = ('photo', 'membre',)

@@ -4,9 +4,9 @@ from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,action
 from rest_framework.parsers import JSONParser
-from rest_framework import status
+from rest_framework import status,viewsets
 
 from .forms import UploadFileForm
 
@@ -21,6 +21,55 @@ from base64 import b64decode
 BASE_DIR = Path(__file__).resolve().parent.parent
 test= False;
 
+class MembreCreation(viewsets.ModelViewSet):
+    queryset = PhotoProfil.objects.all()
+    serializer_class = PhotoProfilSerializer
+
+    def post(self, request, *args, **kwargs):
+        membre = int(request.data['membre'])
+        photo = request.data['photo']
+        try:
+            photoprofil = PhotoProfil.objects.create(membre=membre, photo=photo)
+            serial = PhotoProfilSerializer(data=photoprofil)
+            if serial.is_valid():
+                return JsonResponse(serial.data)
+            else:
+                return JsonResponse(serial.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return JsonResponse("erreur",status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods='put')
+    def put(self, request, pk=None):
+        id = int(request.data['id'])
+        photo = request.data['photo']
+
+        try:
+            photoprofil = PhotoProfil.objects.get(id=id)
+            photoprofil.photo = photo
+            photoprofil.save()
+            return HttpResponse("Modification reussie", status=status.HTTP_200_OK)
+        except PhotoProfil.DoesNotExist:
+            return HttpResponse("erreur",status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class PhotoCreation(viewsets.ModelViewSet):
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
+
+    def post(self, request, *args, **kwargs):
+        image = request.data['url_image']
+        activite = int(request.data['activite'])
+
+        try:
+            photo = Photo.objects.create(url_image=image, activite=activite)
+            serial = PhotoSerializer(data=photo)
+            if serial.is_valid():
+                return JsonResponse(serial.data)
+            else:
+                return JsonResponse(serial.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return JsonResponse("erreur", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 @csrf_exempt
 def testCodeQr(request):
     image_data = JSONParser().parse(request);
@@ -59,14 +108,15 @@ def create(serializer, request):
     serial = serializer(data=element)
 
     if serial.is_valid():
-        serial.save
-        test=True
+        serial.save()
+        return JsonResponse(serial.data)
 
-    return serial
+    return JsonResponse(serial.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def update(serializer, pk, model, request):
     item = model.objects.get(id=pk)
-    serial = serializer(instance=item, data=request.data)
+    element = JSONParser().parse(request)
+    serial = serializer(item, data=element)
 
     if serial.is_valid():
         serial.save
@@ -77,34 +127,33 @@ def delete(serializer, pk, model):
     item = model.objects.get(id=pk)
     item.delete()
 
-
-
 def object_list(serializer, model, request):
     if request.method == "GET":
         return JsonResponse(read_all(serializer, model).data, safe=False)
     elif request.method == "POST":
-        return JsonResponse(create(serializer, request).data)
+        return create(serializer, request)
     else:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
+@action(detail=True, methods='put')
 def object_get_update_delete(serializer, model, request, pk):
     try:
         if request.method == "GET":
             return JsonResponse(read(serializer, pk, model).data)
         elif request.method == "PUT":
-            return JsonResponse(update(serializer, pk, model, request))
+            return JsonResponse(update(serializer, pk, model, request).data)
         else:
             return HttpResponse(delete(serializer, pk, model))
     except Membre.DoesNotExist:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
-def home(requet):
+def home(request):
     return Response(read_all(MembreSerializer, Membre).data)
 
 @csrf_exempt
 def membre_list(request):
-    return object_list(MembreSerializer, Membre, request)
+    return object_list(MembreSaveSerializer, Membre, request)
 
 
 @csrf_exempt
@@ -149,7 +198,7 @@ def categorie_get_update_delete(request, pk):
 
 @csrf_exempt
 def activite_list(request):
-    return object_list(ActiviteSerializer, Activite, request)
+    return object_list(ActiviteSaveSerializer, Activite, request)
 
 @csrf_exempt
 def activite_get_update_delete(request, pk):
@@ -180,12 +229,46 @@ def presence_list(request):
 def presence_get_update_delete(request, pk):
     return object_get_update_delete(PresenceSerializer, Presence, request, pk)
 
+@csrf_exempt
+def contact_organisation_list(request):
+    return object_list(ContactOrganisationSerializer, ContactOrganisation, request)
+
+@csrf_exempt
+def contact_organisation_get_update_delete(request, pk):
+    return object_get_update_delete(ContactOrganisationSerializer, ContactOrganisation, request, pk)
+
+@csrf_exempt
+def regle_list(request):
+    return object_list(RegleSerializer, Regle, request)
+
+@csrf_exempt
+def regle_get_update_delete(request, pk):
+    return object_get_update_delete(RegleSerializer, Regle, request, pk)
+
+@csrf_exempt
+def cotisation_list(request):
+    return object_list(CotisationSerializer, Cotisation, request)
+
+@csrf_exempt
+def cotisation_get_update_delete(request, pk):
+    return object_get_update_delete(CotisationSerializer, Cotisation, request, pk)
+
+@csrf_exempt
+def paiement_list(request):
+    return object_list(PaiementSerializer, Paiement, request)
+
+@csrf_exempt
+def paiement_get_update_delete(request, pk):
+    return object_get_update_delete(PaiementSerializer, Paiement, request, pk)
+
+@csrf_exempt
+def photoprofil_list(request):
+    return object_list(PhotoProfilSerializer, PhotoProfil, request)
+
+@csrf_exempt
+def photoprofil_get_update_delete(request, pk):
+    return object_get_update_delete(PhotoProfilSerializer, PhotoProfil, request, pk)
+
 @api_view(['PUT'])
 def update_membre(request,pk):
     return Response(update(MembreSerializer,pk,Membre,request).data)
-
-def upload_file(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            return HttpResponse()

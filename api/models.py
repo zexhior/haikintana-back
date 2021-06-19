@@ -1,29 +1,13 @@
 from django.db import models
 
-class Association(models.Model):
-    nom = models.CharField(max_length=100,null=False)
-    localisation = models.CharField(max_length=100)
-    logo = models.ImageField(upload_to='images')
-
-#ContactOrganisation
-class ContactOrganisation(models.Model):
-    email = models.CharField(max_length=150, default="", null=True)
-    numero = models.CharField(max_length=20)
-    bancaire = models.CharField(max_length=25)
-    facebook = models.CharField(max_length=100)
-    association = models.ForeignKey(Association, default=1, related_name="contactorganisations", on_delete=models.CASCADE)
-
 #membre
 class Membre(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     adr_phys = models.CharField(max_length=100)
     date_add = models.DateField(auto_now_add=True)
-    nbr_paiement = models.SmallIntegerField()
-    photo = models.ImageField(upload_to='images')
     linkedin = models.CharField(max_length=100)
     statut = models.CharField(max_length=100)
-    association = models.ForeignKey(Association, default=1,  related_name="association_membres", on_delete=models.CASCADE)
 
     def __str__(self):
         return "{} {}".format(self.nom, self.prenom)
@@ -51,7 +35,6 @@ class ContactMail(models.Model):
 
 class Categorie(models.Model):
     type = models.CharField(max_length=100, null=False)
-    association = models.ForeignKey(Association, default=1,  related_name="association_categories", on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.type)
@@ -59,8 +42,7 @@ class Categorie(models.Model):
 class Activite(models.Model):
     theme = models.CharField(max_length=200, null=False)
     date = models.DateField(null=False)
-    association = models.ForeignKey(Association, default=1,  related_name="association_activites", on_delete=models.CASCADE)
-    categorie = models.ForeignKey(Categorie, related_name='activities' ,on_delete=models.CASCADE)
+    categorie = models.ForeignKey(Categorie, default=1, related_name='activities', on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.theme)
@@ -82,11 +64,18 @@ class Description(models.Model):
 class Presence(models.Model):
     presence = models.BooleanField(default=False)
     contrepresence = models.BooleanField(default=False)
-    activite = models.ForeignKey(Activite, related_name='activites', on_delete= models.CASCADE)
-    membre = models.ForeignKey(Membre, related_name='membres', on_delete= models.CASCADE)
+    activite = models.ForeignKey(Activite, related_name='presences', on_delete= models.CASCADE)
+    membre = models.ForeignKey(Membre, related_name='presencemembre', on_delete= models.CASCADE)
 
     def __str__(self):
         return "{} {}".format(self.presence)
+
+#ContactOrganisation
+class ContactOrganisation(models.Model):
+    email = models.CharField(max_length=150, default="", null=True)
+    numero = models.CharField(max_length=20)
+    bancaire = models.CharField(max_length=25)
+    facebook = models.CharField(max_length=100)
 
 class Regle(models.Model):
     numero = models.SmallIntegerField(default=0)
@@ -97,12 +86,25 @@ class Regle(models.Model):
         return "{} {}".format(self.numero, self.description)
 
 class Cotisation(models.Model):
-    montant = models.BigIntegerField(default=0)
-    ref = models.CharField(max_length=30, null=False)
-    membre = models.ForeignKey(Membre, related_name="cotisations", null=False, on_delete= models.CASCADE)
+    motif= models.CharField(default="",max_length=300,null=False)
+    montant = models.BigIntegerField(default=0, null=False)
+    activite = models.ForeignKey(Activite, related_name='activite', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return "{} {} {}".format(self.membre, self.montant, self.ref)
+
+class PhotoProfil(models.Model):
+    photo = models.ImageField(upload_to='images')
+    membre = models.OneToOneField(Membre, related_name='photoprofil', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{} {}".format(self.photo, self.membre)
+
+class Paiement(models.Model):
+    montant = models.BigIntegerField(null=False)
+    ref = models.CharField(max_length=100,null=False)
+    membre = models.ForeignKey(Membre, related_name='paiementmembre', on_delete=models.CASCADE)
+    cotisation = models.ForeignKey(Cotisation, related_name="paiementcotisation", on_delete=models.CASCADE)
 
 #{
 #    'nom' = "RAKOTO",
