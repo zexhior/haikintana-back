@@ -11,9 +11,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='activite',
-            name='categorie',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='activities', to='api.categorie'),
-        ),
+        #migrations.AddField(
+        #    model_name='activite',
+        #    name='categorie',
+        #    field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='activities', to='api.categorie'),
+        #),
     ]

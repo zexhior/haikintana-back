@@ -1,6 +1,9 @@
 from django.urls import path
 from django.conf.urls import url,include
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+from rest_framework.authtoken import views as vs
 from . import views
 
 route = DefaultRouter()
@@ -52,7 +55,20 @@ urlpatterns = [
     url(r'^regles/$', views.regle_list),
     url(r'^regles/(?P<pk>[0-9]+)$', views.regle_get_update_delete),
 
+    url(r'^statuts/$', views.statut_list),
+    url(r'^statuts/(?P<pk>[0-9]+)$', views.statut_get_update_delete),
+
     url(r'^updates/(?P<pk>[0-9]+)$', views.update_membre),
     url(r'^$', views.home, name='home'),
     url(r'^qrcode/$', views.testCodeQr),
+
+    url(r'^authentification/$', views.authentification, name="authentification"),
+
+    url(r'^token/$', obtain_jwt_token),
+    url(r'^token/refresh/$', refresh_jwt_token),
+
+    url(r'^creation/$', views.creationUser),
+    url(r'^get_user/$', views.getUser),
+    #url(r'^token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    #path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

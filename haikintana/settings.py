@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,9 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7tq591=u&v2@&k1nx*30xtiq@42gs=(o2-689l_xec@mr73%4o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+if os.environ.get('ENV') == "PRODUCTION":
+    DEBUG = False
+else:
+    DEBUG = True
+
+ALLOWED_HOSTS = ['haikintana.herokuapp.com']
 
 
 # Application definition
@@ -43,6 +48,7 @@ INSTALLED_APPS = [
 
     #restframework
     'rest_framework',
+    'rest_framework_simplejwt',
 
     # api application
     'api.apps.ApiConfig'
@@ -89,7 +95,7 @@ WSGI_APPLICATION = 'haikintana.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dbhaikintana',
+        'NAME': 'haikintana',
         'USER': 'herizo',
         'PASSWORD': 'SOUVENIR123@perdu',
         'HOST': 'localhost',
@@ -139,12 +145,34 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
+if os.environ.get('ENV') == 'PRODUCTION':
+    db_from_env = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'].update(db_from_env)
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:4200',
+    'http://localhost:36095'
 )
 
 MEDIA_URL =  '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+REST_FRAMEWORK = {
+    #'DEFAULT_PERMISSION_CLASSES': (
+    #    'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    #),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        #'rest_framework_simplejwt.authentication.JWTAuthentication',
+        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
+#JWT_AUTH = {
+#    'JWT_ALLOW_REFRESH': True,
+#    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
+#}

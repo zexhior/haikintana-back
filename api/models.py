@@ -1,5 +1,10 @@
 from django.db import models
 
+class Statut(models.Model):
+    poste = models.CharField(max_length=100, null=False)
+
+    def __str__(self):
+        return "{}".format(self.poste)
 #membre
 class Membre(models.Model):
     nom = models.CharField(max_length=100)
@@ -7,7 +12,8 @@ class Membre(models.Model):
     adr_phys = models.CharField(max_length=100)
     date_add = models.DateField(auto_now_add=True)
     linkedin = models.CharField(max_length=100)
-    statut = models.CharField(max_length=100)
+    statut = models.ForeignKey(Statut, related_name='statutmembre', on_delete=models.CASCADE)
+    mdp = models.CharField(max_length=30,null=False,default="membre951haikintana")
 
     def __str__(self):
         return "{} {}".format(self.nom, self.prenom)
@@ -47,19 +53,21 @@ class Activite(models.Model):
     def __str__(self):
         return "{}".format(self.theme)
 
-class Photo(models.Model):
-    url_image = models.ImageField(upload_to='images')
-    activite = models.ForeignKey(Activite, related_name='photos', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "{}".format(self.url_image)
-
 class Description(models.Model):
+    titre = models.CharField(max_length=200, null=False)
     paragraphe = models.CharField(max_length=1000, null=False)
     activite = models.ForeignKey(Activite, related_name='descriptions', on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.paragraphe)
+
+class Photo(models.Model):
+    image = models.ImageField(upload_to='images')
+    url_image = models.CharField(default="", max_length=200, null=False)
+    description = models.ForeignKey(Description, related_name='photos', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{}".format(self.url_image)
 
 class Presence(models.Model):
     presence = models.BooleanField(default=False)
